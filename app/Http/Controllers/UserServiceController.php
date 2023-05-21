@@ -15,32 +15,32 @@ class UserServiceController extends Controller
 
     public function AddUserService(Request $request)
     {
-                    $validator = Validator::make($request->all(), [
-                        'serviceName' => 'required',
-                        'userEmail' => 'required|email',
-                        'location' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json([
-                            'validation_errors' => $validator->messages()
-                        ]);
-                    } else {
-                        $sname = $request->serviceName;
-                        $uemail = $request->userEmail;
-                        $serviceId = Service::where('name', $sname)->value('id');
-                        $userId = User::where('email', $uemail)->value('id');
-                        $user_service = new UserService();
-                        $user_service->user_id = $userId;
-                        $user_service->service_id = $serviceId;
-                        $user_service->location = $request->location ;
-                        $user_service->save();
-                    }
-                    $result = [
-                        'status'=> 200,
-                        'userServiceName' => $sname ,
-                        'message' => 'the service added successfuly ',
-                    ];
-                    return response()->json($result);
+        $validator = Validator::make($request->all(), [
+            'serviceName' => 'required',
+            'userEmail' => 'required|email',
+            'location' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_errors' => $validator->messages()
+            ]);
+        } else {
+            $sname = $request->serviceName;
+            $uemail = $request->userEmail;
+            $serviceId = Service::where('name', $sname)->value('id');
+            $userId = User::where('email', $uemail)->value('id');
+            $user_service = new UserService();
+            $user_service->user_id = $userId;
+            $user_service->service_id = $serviceId;
+            $user_service->location = $request->location;
+            $user_service->save();
+        }
+        $result = [
+            'status' => 200,
+            'userServiceName' => $sname,
+            'message' => 'the service added successfuly ',
+        ];
+        return response()->json($result);
     }
 
     public function ShowAllUsersServices()
@@ -53,7 +53,7 @@ class UserServiceController extends Controller
             $service = Service::where('id', $sID)->get()->value('name');
             $user_firstN = User::where('id', $uID)->get()->value('first_name');
             $user_lastN = User::where('id', $uID)->get()->value('last_name');
-            $user = $user_firstN ." ". $user_lastN ;
+            $user = $user_firstN . " " . $user_lastN;
             $result[] = [
                 'user name' => $user,
                 'service' => $service
@@ -85,8 +85,8 @@ class UserServiceController extends Controller
             $result = [];
             foreach ($IDs as $ID) {
                 $userService = UserService::where('user_id', $userID)->where('id', $ID->id)->get()->value('service_id');
-                if($userService){
-                    $result[] = [Service::where('id',$userService)->get('name')];
+                if ($userService) {
+                    $result[] = [Service::where('id', $userService)->get('name')];
                 }
             }
 
@@ -100,7 +100,8 @@ class UserServiceController extends Controller
     }
 
 
-    public function DeleteUserService(Request $request){
+    public function DeleteUserService(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'service' => 'required',
             'email' => 'required|email',
@@ -124,7 +125,78 @@ class UserServiceController extends Controller
     public function Show()
     {
         $day = "Thu%2023";
-        $dayS = AvailableDay::where('todaydate','LIKE',$day)->get();
+        $dayS = AvailableDay::where('todaydate', 'LIKE', $day)->get();
         return $dayS;
+    }
+
+
+    public function SearchByLocation(Request $request)
+    {
+        $location = $request->location;
+        $userServices = UserService::where('location', "like", $location)->get();
+        $res = [];
+        if (count($userServices) > 0) {
+            foreach ($userServices as $userService) {
+                $user = User::where('id', $userService->user_id)->get()->first();
+                $service = Service::where('id', $userService->service_id)->get()->first();
+                $res[] = [
+                    'service' => $service->name,
+                    'user' => $user->first_name . " " . $user->last_name,
+                    'id' => $userService->id,
+                ];
+            }
+            $result = [
+                'status' => 200,
+                'message' => "this is your slots for today",
+                'data' => $res,
+            ];
+            return response()->json($result);
+        } else {
+
+            $result = [
+                'status' => 400,
+                'message' => "we dont find what you looking for",
+            ];
+            return response()->json($result);
+        }
+    }
+
+    public function SearchByName(Request $request)
+    {
+        $name = $request->name;
+        $res = [];
+        $users = User::where('first_name', $name)->orwhere('last_name', $name)->get();
+        if (empty($users)) {
+        } else {
+            foreach ($users as $user) {
+                $userservice = null;
+                $userservice = UserService::where('user_id', $user->id)->get()->first();
+                if (empty($userservice)) {
+                    null;
+                } else {
+                    $service = Service::where('id', $userservice->service_id)->get()->first();
+                    $res[] = [
+                        'service' => $service->name,
+                        'user' => $user->first_name . " " . $user->last_name,
+                        'docID' => $userservice->id,
+                    ];
+                }
+            }
+        }
+        if (count($res) > 0) {
+            $result = [
+                'status' => 200,
+                'message' => "this is your slots for today",
+                'data' => $res,
+            ];
+            return response()->json($result);
+        } else {
+
+            $result = [
+                'status' => 400,
+                'message' => "we dont find what you looking for",
+            ];
+            return response()->json($users);
+        }
     }
 }

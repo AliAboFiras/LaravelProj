@@ -110,26 +110,5 @@ class UserController extends Controller
         }
     }
 
-    public function Upgradeee (Request $request){
-        $email = $request->email;
-        if ($email==true){
-            return response()->json(['message' => 'Data saved successfully']);
-        }
-        else {
-            return response()->json(['message' => 'ssssssssssssssssss']);
-        }
-
-    }
-
-    public function Upgradee (Request $request){
-        $email = $request->email;
-        if ($email==true){
-            return response()->json(['message' => 'Data saved successfully']);
-        }
-        else {
-            return response()->json(['message' => 'wwwwwwwwwwwwwwwwwwww']);
-        }
-
-    }
 
 }

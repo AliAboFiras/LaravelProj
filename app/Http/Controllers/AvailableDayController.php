@@ -15,42 +15,26 @@ class AvailableDayController extends Controller
         $t = $today->toFormattedDayDateString();
         $av = new AvailableDay();
         $av->todayDate = $t ;
-        $av->save();
+        // $av->save();
         $result = [
             'message' => "success",
-            'added'=>$av
+            'added'=>$today
         ];
         return response()->json($result);
     }
+
     public function IncreaseAvailableDayDates(Request $request)
     {
-        $daysNum = $request->number;
-        $thisDay = Carbon::today();
-        $thisStringDay = $thisDay->toFormattedDayDateString();
-        $todayID = AvailableDay::where('todayDate', $thisStringDay)->value('id');
-        $lastDay = AvailableDay::orderBy('id', 'desc')->first();
-        $daysDifference = $lastDay->id - $todayID ;
-        for ($i = 0; $i <= $daysDifference; $i++) {
-            $thisDay = $thisDay->addDay();
+        $dates = $request->dates;
+        foreach ($dates as $date) {
+            $newDay = new AvailableDay();
+            $newDay->todayDate = $date ;
+            $newDay->save();
         }
-        $thisNewStringDay = $thisDay->toFormattedDayDateString();
-        $avDay = new AvailableDay();
-        $avDay->todayDate = $thisNewStringDay;
-        $avDay->save();
-        for ($i = 1; $i < $daysNum; $i++) {
-            $thisDay = $thisDay->addDay();
-            $thisNewStringDay = $thisDay->toFormattedDayDateString();
-            $avDay = new AvailableDay();
-            $avDay->todayDate = $thisNewStringDay;
-            $avDay->save();
-            $lastVaThisday = $thisDay->toFormattedDayDateString();
-        }
-
-
-
         $result = [
+            'status' => 200,
             'message' => "success",
-            'lastVaThisday'=>$lastVaThisday
+            'data' => "this is your last available day in Database " . $newDay->todayDate
         ];
         return response()->json($result);
     }
@@ -58,23 +42,10 @@ class AvailableDayController extends Controller
     public function GetLastAvailableDay()
     {
         $lastDay = AvailableDay::orderBy('id', 'desc')->first();
-        $thisStringDay = "2023-03-20";
-        $todayID = AvailableDay::where('todayDate', $thisStringDay)->value('id');
-        $daysDifference =  $lastDay->id - $todayID;
-        $thisDay = Carbon::today();
-        for ($i = 0; $i <= $daysDifference; $i++) {
-            $thisDay = $thisDay->addDay();
-        }
-
-        $thisNewStringDay = $thisDay->toDateString();
-
         $result = [
-            'message' => "success",
-            'last date in database' => $thisDay->toDateString(),
-            'today date' => $now = Carbon::now(),
-            'last date id in database' => $lastDay->id,
-            'difference' => $daysDifference,
-            'll' => $thisNewStringDay
+            'status' => 200,
+            'message' => "this is your last available day in Database",
+            'data' => $lastDay->todayDate
         ];
         return response()->json($result);
     }

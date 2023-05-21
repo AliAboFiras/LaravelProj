@@ -9,7 +9,7 @@ class UserService extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'service_id'];
+    protected $fillable = ['user_id', 'service_id','location'];
 
     public function services()
     {

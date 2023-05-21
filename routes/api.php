@@ -38,8 +38,8 @@ Route::middleware('auth:sanctum')->post('upgradee', [UserController::class, 'Upg
 Route::get('time', [TestConroller::class, 'index']);
 
 Route::get('insertTodayDate', [AvailableDayController::class, 'InsertTodayDate']);
-Route::post('increaseAvailableDayDates', [AvailableDayController::class, 'IncreaseAvailableDayDates']);
-Route::get('getLastAvailableDay', [AvailableDayController::class, 'GetLastAvailableDay']);
+Route::middleware('auth:sanctum')->post('increaseAvailableDayDates', [AvailableDayController::class, 'IncreaseAvailableDayDates']);
+Route::middleware('auth:sanctum')->get('getLastAvailableDay', [AvailableDayController::class, 'GetLastAvailableDay']);
 
 Route::post('addGeneralService', [ServiceController::class, 'AddGeneralService']);
 Route::get('showGeneralServices', [ServiceController::class, 'ShowGeneralServices']);
@@ -48,10 +48,15 @@ Route::middleware('auth:sanctum')->post('addUserService', [UserServiceController
 Route::get('showAllUsersServices', [UserServiceController::class, 'ShowAllUsersServices']);
 Route::post('deleteUserService', [UserServiceController::class, 'DeleteUserService']);
 Route::post('showUserServices', [UserServiceController::class, 'ShowUserServices']);
+Route::middleware('auth:sanctum')->post('searchByLocation', [UserServiceController::class, 'SearchByLocation']);
+Route::middleware('auth:sanctum')->post('searchByName', [UserServiceController::class, 'SearchByName']);
 
-Route::middleware('auth:sanctum')->post('addMasterAvailableSlots',[SlotController::class , 'AddMasterAvailableSlots']);
-Route::middleware('auth:sanctum')->get('getSlot',[SlotController::class , 'GetSlot']);
-Route::get('getAllSlots',[SlotController::class , 'GetAllSlots']);
-Route::post('getAllUserSlots',[SlotController::class , 'GetAllUserSlots']);
-Route::post('addClientSlot',[SlotController::class , 'AddClientSlot']);
-Route::post('deleteClientSlot',[SlotController::class , 'DeleteClientSlot']);
+Route::middleware('auth:sanctum')->post('addMasterAvailableSlots', [SlotController::class, 'AddMasterAvailableSlots']);
+Route::middleware('auth:sanctum')->get('getSlot', [SlotController::class, 'GetSlot']);
+Route::get('getAllSlots', [SlotController::class, 'GetAllSlots']);
+Route::middleware('auth:sanctum')->post('getMasterTodaySlots', [SlotController::class, 'GetMasterTodaySlots']);
+Route::middleware('auth:sanctum')->post('checkTodayClientSlot', [SlotController::class, 'CheckTodayClientSlot']);
+Route::middleware('auth:sanctum')->post('visitDoctorProfile', [SlotController::class, 'VisitDoctorProfile']);
+Route::middleware('auth:sanctum')->post('viewTodaySlot', [SlotController::class, 'ViewTodaySlot']);
+Route::post('addClientSlot', [SlotController::class, 'AddClientSlot']);
+Route::post('deleteClientSlot', [SlotController::class, 'DeleteClientSlot']);
