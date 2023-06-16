@@ -176,7 +176,7 @@ class SlotController extends Controller
             }
             $result = [
                 'status' => 200,
-                'message' => "this is slot state for your date",
+                'message' => "this is slmot state for your date",
                 'data' => $res,
                 'dateID' => $slot->id,
             ];
@@ -184,7 +184,7 @@ class SlotController extends Controller
         } else {
             $result = [
                 'status' => 400,
-                'message' => "there is no slots for the date you chose it",
+                'message' => "لا توجد خانات للتاريخ الذي اخترته",
             ];
             return response()->json($result);
         }
